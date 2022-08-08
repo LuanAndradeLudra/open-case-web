@@ -1,29 +1,33 @@
 <template>
   <div class="roulete">
-    <VueSlickCarousel class="slider" ref="slider" v-bind="settings">
-      <div
-        v-for="(item, index) in 50"
-        :key="index"
-        class="carousel-item item-red"
-      >
-        <img
-          src="https://community.cloudflare.steamstatic.com/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpot7HxfDhjxszJemkV09K_k4ifgP7nO4Tdn2xZ_Ishib2Urd33jQTt_xZuMT30J4THJ1U_aQ2CrgDqw7johMS9vJzBmCRhpGB8sq3xhCxI/184fx138f/image.png"
-        />
-        <div class="item-title">
-          <div>AK-47</div>
-          <div>Nightwish</div>
+    <div v-if="!showDrop">
+      <VueSlickCarousel class="slider" ref="slider" v-bind="settings">
+        <div
+          v-for="(weapon, index) in round.round"
+          :key="index"
+          class="carousel-item"
+          :class="`item-${weapon.weapon.item_rarity}`"
+        >
+          <img
+            :src="`${$config.env.storageUrl}weapons/${weapon.weapon.image.preview}`"
+          />
+          <div class="item-title">
+            <div>{{ weapon.weapon.item_type }}</div>
+            <div>{{ weapon.weapon.name }}</div>
+          </div>
         </div>
+      </VueSlickCarousel>
+      <div class="side-arrow left">
+        <img src="https://csgo.net/public/img/fx/case-frame.svg" alt="" />
       </div>
-    </VueSlickCarousel>
-    <div class="side-arrow left">
-      <img src="https://csgo.net/public/img/fx/case-frame.svg" alt="" />
+      <div class="side-arrow right">
+        <img src="https://csgo.net/public/img/fx/case-frame.svg" alt="" />
+      </div>
+      <div class="shadow left"></div>
+      <div class="shadow right"></div>
+      <div class="marker"></div>
     </div>
-    <div class="side-arrow right">
-      <img src="https://csgo.net/public/img/fx/case-frame.svg" alt="" />
-    </div>
-    <div class="shadow left"></div>
-    <div class="shadow right"></div>
-    <div class="marker"></div>
+    <casesDrop v-else :weapon="round.dropData" :box="box" @reopen="reopen()" />
   </div>
 </template>
 
@@ -34,15 +38,23 @@ import "vue-slick-carousel/dist/vue-slick-carousel.css";
 import "vue-slick-carousel/dist/vue-slick-carousel-theme.css";
 export default {
   components: { VueSlickCarousel },
+  props: {
+    round: {
+      type: Object,
+      default: {},
+    },
+    box: { type: Object, default: {} },
+  },
   data() {
     return {
+      showDrop: false,
       settings: {
         arrows: false,
         dots: false,
         draggable: false,
         swipe: false,
         infinite: true,
-        speed: 8000,
+        speed: 6000,
         slidesToShow: 5,
         slidesToScroll: 5,
         centerMode: true,
@@ -52,8 +64,17 @@ export default {
   },
   mounted() {
     setTimeout(() => {
-      this.$refs.slider.goTo(25);
-    }, 600);
+      this.$refs.slider.goTo(50);
+    }, 800);
+    setTimeout(() => {
+      this.showDrop = true;
+    }, 7500);
+  },
+  methods: {
+    reopen() {
+      this.showDrop = false;
+      this.$emit("reopen");
+    },
   },
 };
 </script>

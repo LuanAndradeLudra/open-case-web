@@ -14,7 +14,7 @@
         <div>{{ weapon.weapon.item_type }}</div>
         <div>{{ weapon.weapon.name }}</div>
         <div class="weapon-price">
-          R$ {{ weapon.weapon.item_price.factory_new }}
+          R$ {{ weapon.weapon.item_price.factory_new.toFixed(2) }}
         </div>
       </div>
     </div>
@@ -59,6 +59,10 @@ export default {
         (item) => item.weapon.item_rarity === "blue"
       );
       this.weaponsBox.push(...blueItems);
+       const lightBlueItems = this.weapons.filter(
+        (item) => item.weapon.item_rarity === "light-blue"
+      );
+      this.weaponsBox.push(...lightBlueItems);
     },
   },
 };
@@ -66,7 +70,7 @@ export default {
 
 <style lang="scss">
 .weapons {
-  margin-top: 60px;
+  margin: 60px 0;
   width: 100%;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
@@ -85,6 +89,8 @@ export default {
     color: rgb(183, 188, 219);
     img {
       width: 100%;
+      height: 155px;
+      object-fit: contain;
       transition: 0.2s;
     }
     img:hover {

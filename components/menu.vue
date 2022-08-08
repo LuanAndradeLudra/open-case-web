@@ -2,7 +2,7 @@
   <div class="menu-items">
     <div class="links">
       <div class="item" :class="{active: page === '/cases/list'}" @click="changePage('/cases/list')">Caixas</div>
-      <div class="item">Perfil</div>
+      <div class="item" @click="changePage('/profile')">Perfil</div>
     </div>
     <div class="person">
       <span class="money"> R$ {{$auth.user.inventory.wallet.toFixed(2).replace(".", ",")}}</span>

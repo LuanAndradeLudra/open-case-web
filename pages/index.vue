@@ -15,6 +15,7 @@
         <div class="side-content" cols="10">
           <casesList v-if="page === '/cases/list'" @page="changePage" />
           <casesCase v-if="page === '/case'" :box="param" @page="changePage" />
+          <profile v-if="page === '/profile'" />
         </div>
       </div>
     </b-overlay>

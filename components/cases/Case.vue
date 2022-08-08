@@ -14,15 +14,22 @@
           <img src="https://csgo.net/public/img/fx/case-frame.svg" alt="" />
         </div>
       </div>
-      <button v-if="canOpen()" class="button-price" @click="spin = true">
-        Abrir por {{ getBoxPrice() }}
+      <button
+        v-if="canOpen()"
+        class="button-price"
+        @click="loadingRound ? null : openCase()"
+      >
+        <span v-if="loadingRound">
+          <b-spinner label="Spinning"></b-spinner
+        ></span>
+        <span v-else>Abrir por {{ getBoxPrice() }}</span>
       </button>
       <button v-else class="button-price negate">
         Você precisa de {{ getBoxPrice() }}
       </button>
     </div>
     <div v-else>
-      <casesSpin />
+      <casesSpin :round="round" :box="box" @reopen="reopen" />
     </div>
     <casesWeapons :weapons="box.weapons" />
   </div>
@@ -38,10 +45,20 @@ export default {
   },
   data() {
     return {
+      audio: null,
+      loadingRound: false,
       spin: false,
+      round: [],
     };
   },
+  beforeDestroy() {
+    if (this.audio) this.audio.pause();
+  },
   methods: {
+    reopen() {
+      this.spin = false;
+      if (this.canOpen()) this.openCase();
+    },
     back() {
       this.$emit("page", { page: "/cases/list" });
     },
@@ -56,6 +73,28 @@ export default {
         const discount = (this.box.price / 100) * this.box.discount;
         return this.box.price - discount < this.$auth.user.inventory.wallet;
       } else return this.box.price < this.$auth.user.inventory.wallet;
+    },
+    async openCase() {
+      try {
+        this.loadingRound = true;
+        const round = await this.$axios.get(
+          `games/spin/roulete/${this.box._id}`
+        );
+        await this.$auth.fetchUser();
+        this.round = round.data.data;
+        this.loadingRound = false;
+        this.audio = new Audio("/sounds/open_case.mp3");
+        this.audio.play();
+        this.spin = true;
+      } catch (err) {
+        this.$toast.open({
+          message:
+            err.response.data.error ?? "Houve um erro ao carregar as caixas",
+          type: "error",
+          position: "top-right",
+          duration: 4000,
+        });
+      }
     },
   },
 };
